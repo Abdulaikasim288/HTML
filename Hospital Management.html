@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #e8f4f8;
+            padding: 20px;
+        }
+      .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,100,150,0.2);
+            overflow: hidden;
+        }
+      .header {
+            background: linear-gradient(135deg, #0077be, #004d7a);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 4px solid #00a8e8;
+        }
+      .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+      .header h2 {
+            font-size: 16px;
+            font-weight: normal;
+            opacity: 0.9;
+        }
+      .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 20px;
+            background: #f0f8ff;
+        }
+        button {
+            padding: 12px;
+            background: #0077be;
+            color: white;
+            border: 2px solid #005a8d;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover { background: #005a8d; transform: translateY(-2px); }
+        button.danger { background: #c0392b; border-color: #a93226; }
+        button.danger:hover { background: #a93226; }
+        button.success { background: #27ae60; border-color: #229954; }
+        button.success:hover { background: #229954; }
+      .section {
+            display: none;
+            padding: 30px;
+        }
+      .section.active { display: block; }
+      .section h3 {
+            color: #004d7a;
+            border-bottom: 2px solid #00a8e8;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #004d7a;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #00a8e8;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        textarea { resize: vertical; min-height: 70px; }
+      .form-group { margin-bottom: 12px; }
+      .output {
+            background: #f0f8ff;
+            border: 1px solid #00a8e8;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+      .error { color: #c0392b; font-weight: bold; }
+      .success-msg { color: #27ae60; font-weight: bold; }
+      .patient-card {
+            background: white;
+            border: 2px solid #00a8e8;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            position: relative;
+        }
+      .patient-card::before {
+            content: "⚕";
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            color: #00a8e8;
+            opacity: 0.3;
+        }
+      .status-admitted { color: #27ae60; font-weight: bold; }
+      .status-discharged { color: #7f8c8d; font-weight: bold; }
+      .status-emergency { color: #c0392b; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HOSPITAL MANAGEMENT SYSTEM</h1>
+            <h2>Patient & Appointment Records</h2>
+        </div>
+
+        <div class="menu">
+            <button onclick="showSection('register')">1. Register Patient</button>
+            <button onclick="showSection('view')">2. View Patients</button>
+            <button onclick="showSection('search')">3. Search Patient</button>
+            <button onclick="showSection('update')">4. Update Patient</button>
+            <button onclick="showSection('delete')">5. Discharge Patient</button>
+            <button onclick="showSection('appointment')">6. Book Appointment</button>
+            <button onclick="showSection('report')">7. Patient Report</button>
+            <button onclick="showSection('save')" class="success">8. Save Records</button>
+            <button onclick="exportCSV()" class="success">9. Export to CSV</button>
+        </div>
+
+        <!-- 1. Register Patient -->
+        <div id="register" class="section active">
+            <h3>Register New Patient</h3>
+            <div class="form-group">
+                <label>Patient ID:</label>
+                <input type="number" id="patientId">
+            </div>
+            <div class="form-group">
+                <label>Full Name:</label>
+                <input type="text" id="patientName">
+            </div>
+            <div class="form-group">
+                <label>Age:</label>
+                <input type="number" id="patientAge">
+            </div>
+            <div class="form-group">
+                <label>Gender:</label>
+                <select id="patientGender">
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Phone Number:</label>
+                <input type="text" id="patientPhone">
+            </div>
+            <div class="form-group">
+                <label>Address:</label>
+                <textarea id="patientAddress"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Blood Group:</label>
+                <select id="bloodGroup">
+                    <option value="">Select Blood Group</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Disease/Diagnosis:</label>
+                <input type="text" id="disease">
+            </div>
+            <div class="form-group">
+                <label>Admission Date:</label>
+                <input type="text" id="admissionDate" placeholder="dd/mm/yyyy">
+            </div>
+            <div class="form-group">
+                <label>Ward/Room No:</label>
+                <input type="text" id="wardNo">
+            </div>
+            <div class="form-group">
+                <label>Doctor Assigned:</label>
+                <input type="text" id="doctorName">
+            </div>
+            <div class="form-group">
+                <label>Status:</label>
+                <select id="status">
+                    <option value="Admitted">Admitted</option>
+                    <option value="Emergency">Emergency</option>
+                    <option value="Outpatient">Outpatient</option>
+                    <option value="Discharged">Discharged</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Bill Amount: GH₵</label>
+                <input type="number" id="billAmount" step="0.01">
+            </div>
+            <button onclick="registerPatient()">Register Patient</button>
+            <div id="registerOutput" class="output"></div>
+        </div>
+
+        <!-- 2. View Patients -->
+        <div id="view" class="section">
+            <h3>All Patients</h3>
+            <button onclick="viewPatients()">Refresh List</button>
+            <div id="viewOutput" class="output"></div>
+        </div>
+
+        <!-- 3. Search Patient -->
+        <div id="search" class="section">
+            <h3>Search Patient</h3>
+            <label>Enter Patient ID:</label>
+            <input type="number" id="searchId">
+            <button onclick="searchPatient()">Search</button>
+            <div id="searchOutput" class="output"></div>
+        </div>
+
+        <!-- 4. Update Patient -->
+        <div id="update" class="section">
+            <h3>Update Patient Record</h3>
+            <label>Enter Patient ID:</label>
+            <input type="number" id="updateId">
+            <button onclick="loadPatientForUpdate()">Load Patient</button>
+            <div id="updateForm" style="display:none;">
+                <div class="form-group">
+                    <label>New Name:</label>
+                    <input type="text" id="updateName">
+                </div>
+                <div class="form-group">
+                    <label>New Phone:</label>
+                    <input type="text" id="updatePhone">
+                </div>
+                <div class="form-group">
+                    <label>New Address:</label>
+                    <textarea id="updateAddress"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>New Disease/Diagnosis:</label>
+                    <input type="text" id="updateDisease">
+                </div>
+                <div class="form-group">
+                    <label>New Doctor:</label>
+                    <input type="text" id="updateDoctor">
+                </div>
+                <div class="form-group">
+                    <label>New Status:</label>
+                    <select id="updateStatus">
+                        <option value="Admitted">Admitted</option>
+                        <option value="Emergency">Emergency</option>
+                        <option value="Outpatient">Outpatient</option>
+                        <option value="Discharged">Discharged</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>New Bill Amount: GH₵</label>
+                    <input type="number" id="updateBill" step="0.01">
+                </div>
+                <button onclick="updatePatient()">Update Patient</button>
+            </div>
+            <div id="updateOutput" class="output"></div>
+        </div>
+
+        <!-- 5. Discharge Patient -->
+        <div id="delete" class="section">
+            <h3>Discharge Patient</h3>
+            <label>Enter Patient ID:</label>
+            <input type="number" id="deleteId">
+            <button onclick="deletePatient()" class="danger">Discharge Patient</button>
+            <div id="deleteOutput" class="output"></div>
+        </div>
+
+        <!-- 6. Book Appointment -->
+        <div id="appointment" class="section">
+            <h3>Book Appointment</h3>
+            <div class="form-group">
+                <label>Patient ID:</label>
+                <input type="number" id="apptPatientId">
+            </div>
+            <div class="form-group">
+                <label>Appointment Date:</label>
+                <input type="text" id="apptDate" placeholder="dd/mm/yyyy">
+            </div>
+            <div class="form-group">
+                <label>Doctor:</label>
+                <input type="text" id="apptDoctor">
+            </div>
+            <div class="form-group">
+                <label>Reason:</label>
+                <textarea id="apptReason"></textarea>
+            </div>
+            <button onclick="bookAppointment()">Book Appointment</button>
+            <div id="appointmentOutput" class="output"></div>
+        </div>
+
+        <!-- 7. Patient Report -->
+        <div id="report" class="section">
+            <h3>Patient Report</h3>
+            <button onclick="generateReport()">Generate Report</button>
+            <div id="reportOutput" class="output"></div>
+        </div>
+
+        <!-- 8. Save Records -->
+        <div id="save" class="section">
+            <h3>Save Records</h3>
+            <button onclick="saveRecords()">Download HospitalRecords.txt</button>
+            <div id="saveOutput" class="output"></div>
+        </div>
+    </div>
+
+    <script>
+        let patients = [];
+        let appointments = [];
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            if (sectionId === 'view') viewPatients();
+            if (sectionId === 'report') generateReport();
+        }
+
+        function patientIDExists(id) {
+            return patients.some(p => p.id === id);
+        }
+
+        function registerPatient() {
+            const id = parseInt(document.getElementById('patientId').value);
+            const name = document.getElementById('patientName').value.trim();
+            const age = parseInt(document.getElementById('patientAge').value);
+            const gender = document.getElementById('patientGender').value;
+            const phone = document.getElementById('patientPhone').value.trim();
+            const address = document.getElementById('patientAddress').value.trim();
+            const bloodGroup = document.getElementById('bloodGroup').value;
+            const disease = document.getElementById('disease').value.trim();
+            const admissionDate = document.getElementById('admissionDate').value.trim();
+            const wardNo = document.getElementById('wardNo').value.trim();
+            const doctorName = document.getElementById('doctorName').value.trim();
+            const status = document.getElementById('status').value;
+            const billAmount = parseFloat(document.getElementById('billAmount').value);
+            const output = document.getElementById('registerOutput');
+
+            if (!id || patientIDExists(id)) {
+                output.innerHTML = '<span class="error">Patient ID is invalid or already exists.</span>';
+                return;
+            }
+            if (!name ||!age ||!gender ||!phone ||!disease) {
+                output.innerHTML = '<span class="error">Please fill all required fields.</span>';
+                return;
+            }
+
+            patients.push({
+                id, name, age, gender, phone, address, bloodGroup,
+                disease, admissionDate, wardNo, doctorName, status, billAmount
+            });
+
+            output.innerHTML = '<span class="success-msg">Patient Registered Successfully.</span>';
+            document.querySelectorAll('#register input, #register textarea, #register select').forEach(el => el.value = '');
+        }
+
+        function viewPatients() {
+            const output = document.getElementById('viewOutput');
+            if (patients.length === 0) {
+                output.innerHTML = 'No patients registered yet.';
+                return;
+            }
+            let html = '';
+            patients.forEach(p => {
+                const statusClass = p.status === 'Admitted'? 'status-admitted' :
+                                  p.status === 'Emergency'? 'status-emergency' : 'status-discharged';
+                html += `<div class="patient-card">`;
+                html += `Patient ID: ${p.id}\n`;
+                html += `Name: ${p.name} | Age: ${p.age} | Gender: ${p.gender}\n`;
+                html += `Blood Group: ${p.bloodGroup} | Phone: ${p.phone}\n`;
+                html += `Address: ${p.address}\n`;
+                html += `Disease: ${p.disease}\n`;
+                html += `Admission Date: ${p.admissionDate} | Ward: ${p.wardNo}\n`;
+                html += `Doctor: ${p.doctorName}\n`;
+                html += `Status: <span class="${statusClass}">${p.status}</span>\n`;
+                html += `Bill: GH₵ ${p.billAmount.toFixed(2)}\n`;
+                html += `</div>`;
+            });
+            output.innerHTML = html;
+        }
+
+        function searchPatient() {
+            const id = parseInt(document.getElementById('searchId').value);
+            const output = document.getElementById('searchOutput');
+            const patient = patients.find(p => p.id === id);
+
+            if (!patient) {
+                output.innerHTML = '<span class="error">Patient not found.</span>';
+                return;
+            }
+
+            let html = 'Patient Found\n\n';
+            html += `Name: ${patient.name}\n`;
+            html += `Age: ${patient.age} | Gender: ${patient.gender}\n`;
+            html += `Blood Group: ${patient.bloodGroup}\n`;
+            html += `Phone: ${patient.phone}\n`;
+            html += `Address: ${patient.address}\n`;
+            html += `Disease: ${patient.disease}\n`;
+            html += `Admission Date: ${patient.admissionDate}\n`;
+            html += `Ward: ${patient.wardNo}\n`;
+            html += `Doctor: ${patient.doctorName}\n`;
+            html += `Status: ${patient.status}\n`;
+            html += `Bill: GH₵ ${patient.billAmount.toFixed(2)}`;
+            output.innerHTML = html;
+        }
+
+        function loadPatientForUpdate() {
+            const id = parseInt(document.getElementById('updateId').value);
+            const output = document.getElementById('updateOutput');
+            const patient = patients.find(p => p.id === id);
+
+            if (!patient) {
+                output.innerHTML = '<span class="error">Patient not found.</span>';
+                document.getElementById('updateForm').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('updateName').value = patient.name;
+            document.getElementById('updatePhone').value = patient.phone;
+            document.getElementById('updateAddress').value = patient.address;
+            document.getElementById('updateDisease').value = patient.disease;
+            document.getElementById('updateDoctor').value = patient.doctorName;
+            document.getElementById('updateStatus').value = patient.status;
+            document.getElementById('updateBill').value = patient.billAmount;
+            document.getElementById('updateForm').style.display = 'block';
+            output.innerHTML = '';
+        }
+
+        function updatePatient() {
+            const id = parseInt(document.getElementById('updateId').value);
+            const output = document.getElementById('updateOutput');
+            const patient = patients.find(p => p.id === id);
+
+            patient.name = document.getElementById('updateName').value.trim();
+            patient.phone = document.getElementById('updatePhone').value.trim();
+            patient.address = document.getElementById('updateAddress').value.trim();
+            patient.disease = document.getElementById('updateDisease').value.trim();
+            patient.doctorName = document.getElementById('updateDoctor').value.trim();
+            patient.status = document.getElementById('updateStatus').value;
+            patient.billAmount = parseFloat(document.getElementById('updateBill').value);
+
+            output.innerHTML = '<span class="success-msg">Patient Information Updated Successfully.</span>';
+            document.getElementById('updateForm').style.display = 'none';
+        }
+
+        function deletePatient() {
+            const id = parseInt(document.getElementById('deleteId').value);
+            const output = document.getElementById('deleteOutput');
+            const index = patients.findIndex(p => p.id === id);
+
+            if (index === -1) {
+                output.innerHTML = '<span class="error">Patient not found.</span>';
+                return;
+            }
+
+            if (!confirm(`Discharge patient ${patients[index].name}?`)) return;
+
+            patients.splice(index, 1);
+            output.innerHTML = '<span class="success-msg">Patient Discharged Successfully.</span>';
+            document.getElementById('deleteId').value = '';
+        }
+
+        function bookAppointment() {
+            const patientId = parseInt(document.getElementById('apptPatientId').value);
+            const date = document.getElementById('apptDate').value.trim();
+            const doctor = document.getElementById('apptDoctor').value.trim();
+            const reason = document.getElementById('apptReason').value.trim();
+            const output = document.getElementById('appointmentOutput');
+
+            if (!patientIDExists(patientId)) {
+                output.innerHTML = '<span class="error">Patient ID not found. Register patient first.</span>';
+                return;
+            }
+            if (!date ||!doctor ||!reason) {
+                output.innerHTML = '<span class="error">Please fill all appointment fields.</span>';
+                return;
+            }
+
+            appointments.push({ patientId, date, doctor, reason });
+            output.innerHTML = '<span class="success-msg">Appointment Booked Successfully.</span>';
+            document.querySelectorAll('#appointment input, #appointment textarea').forEach(el => el.value = '');
+        }
+
+        function generateReport() {
+            const output = document.getElementById('reportOutput');
+            if (patients.length === 0) {
+                output.innerHTML = 'No patients to report.';
+                return;
+            }
+
+            let html = '========== PATIENT REPORT ==========\n\n';
+            const admitted = patients.filter(p => p.status === 'Admitted').length;
+            const emergency = patients.filter(p => p.status === 'Emergency').length;
+            const outpatient = patients.filter(p => p.status === 'Outpatient').length;
+            const discharged = patients.filter(p => p.status === 'Discharged').length;
+
+            html += `Total Patients: ${patients.length}\n`;
+            html += `Admitted: ${admitted} | Emergency: ${emergency}\n`;
+            html += `Outpatient: ${outpatient} | Discharged: ${discharged}\n\n`;
+
+            html += '--- Patient List ---\n';
+            patients.forEach(p => {
+                html += `${p.id}. ${p.name} - ${p.disease} - Dr. ${p.doctorName} - ${p.status}\n`;
+            });
+
+            const totalBills = patients.reduce((sum, p) => sum + p.billAmount, 0);
+            html += `\nTOTAL BILLS: GH₵ ${totalBills.toFixed(2)}\n`;
+
+            html += `\n--- Appointments: ${appointments.length} ---\n`;
+            appointments.forEach(a => {
+                const p = patients.find(pt => pt.id === a.patientId);
+                html += `${a.date} - ${p?p.name:'Unknown'} with Dr. ${a.doctor} - ${a.reason}\n`;
+            });
+
+            output.innerHTML = html;
+        }
+
+        function saveRecords() {
+            let content = '';
+            patients.forEach(p => {
+                content += `Patient ID: ${p.id}\n`;
+                content += `Name: ${p.name}\n`;
+                content += `Age: ${p.age}\n`;
+                content += `Gender: ${p.gender}\n`;
+                content += `Blood Group: ${p.bloodGroup}\n`;
+                content += `Phone: ${p.phone}\n`;
+                content += `Address: ${p.address}\n`;
+                content += `Disease: ${p.disease}\n`;
+                content += `Admission Date: ${p.admissionDate}\n`;
+                content += `Ward: ${p.wardNo}\n`;
+                content += `Doctor: ${p.doctorName}\n`;
+                content += `Status: ${p.status}\n`;
+                content += `Bill: GH₵ ${p.billAmount.toFixed(2)}\n`;
+                content += '----------------------------------\n';
+            });
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'HospitalRecords.txt';
+            a.click();
+            document.getElementById('saveOutput').innerHTML = '<span class="success-msg">Records Saved Successfully.</span>';
+        }
+
+        function exportCSV() {
+            if (patients.length === 0) {
+                alert('No patients to export.');
+                return;
+            }
+            let csv = 'Patient ID,Name,Age,Gender,Blood Group,Phone,Address,Disease,Admission Date,Ward,Doctor,Status,Bill Amount\n';
+            patients.forEach(p => {
+                csv += `${p.id},"${p.name}",${p.age},${p.gender},${p.bloodGroup},${p.phone},"${p.address}","${p.disease}",${p.admissionDate},${p.wardNo},"${p.doctorName}",${p.status},${p.billAmount.toFixed(2)}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'HospitalPatients.csv';
+            a.click();
+        }
+
+        setInterval(() => {
+            localStorage.setItem('hospital_patients', JSON.stringify(patients));
+            localStorage.setItem('hospital_appointments', JSON.stringify(appointments));
+        }, 2000);
+
+        window.onload = () => {
+            const storedPatients = localStorage.getItem('hospital_patients');
+            const storedAppts = localStorage.getItem('hospital_appointments');
+            if (storedPatients) patients = JSON.parse(storedPatients);
+            if (storedAppts) appointments = JSON.parse(storedAppts);
+        };
+    </script>
+</body>
+</html>

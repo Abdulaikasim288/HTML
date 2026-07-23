@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+      .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+      .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        button:hover { background: #2980b9; }
+        button.danger { background: #e74c3c; }
+        button.danger:hover { background: #c0392b; }
+        button.success { background: #27ae60; }
+        button.success:hover { background: #229954; }
+        button.warning { background: #f39c12; }
+        button.warning:hover { background: #e67e22; }
+      .section {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+      .section.active { display: block; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        label {
+            font-weight: bold;
+            color: #34495e;
+            display: block;
+            margin-top: 10px;
+        }
+      .output {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+      .error { color: #e74c3c; font-weight: bold; }
+      .success-msg { color: #27ae60; font-weight: bold; }
+      .event-card {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+        }
+      .participant-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+      .participant-item button {
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EVENT MANAGEMENT SYSTEM</h1>
+        
+        <div class="menu">
+            <button onclick="showSection('create')">1. Create Event</button>
+            <button onclick="showSection('register')">2. Register Participant</button>
+            <button onclick="showSection('view')">3. View Events</button>
+            <button onclick="showSection('search')">4. Search Event</button>
+            <button onclick="showSection('update')">5. Update Event</button>
+            <button onclick="showSection('delete')">6. Delete Event</button>
+            <button onclick="showSection('editParticipant')" class="warning">7. Edit Participants</button>
+            <button onclick="showSection('report')">8. Attendance Report</button>
+            <button onclick="showSection('save')" class="success">9. Save Records</button>
+            <button onclick="exportCSV()" class="success">10. Export to CSV</button>
+            <button onclick="loadFromStorage()">11. Load Records</button>
+        </div>
+
+        <!-- Create Event -->
+        <div id="create" class="section">
+            <h2>Create Event</h2>
+            <label>Event ID (Format: UEBxxxxx26):</label>
+            <input type="text" id="eventId" placeholder="Example: UEB1234526" maxlength="10">
+            <label>Event Name:</label>
+            <input type="text" id="eventName" placeholder="Enter event name">
+            <label>Event Date (dd/mm/yyyy):</label>
+            <input type="text" id="eventDate" placeholder="19/06/2026">
+            <label>Venue:</label>
+            <input type="text" id="eventVenue" placeholder="Enter venue">
+            <button onclick="createEvent()">Create Event</button>
+            <div id="createOutput" class="output"></div>
+        </div>
+
+        <!-- Register Participant -->
+        <div id="register" class="section">
+            <h2>Register Participant</h2>
+            <div id="availableEvents"></div>
+            <label>Event ID:</label>
+            <input type="text" id="regEventId" placeholder="Must end with 26">
+            <label>Participant ID (Format: UEBxxxxx25):</label>
+            <input type="text" id="participantId" placeholder="Example: UEB1234525" maxlength="10">
+            <label>Participant Name:</label>
+            <input type="text" id="participantName" placeholder="Enter participant name">
+            <button onclick="registerParticipant()">Register Participant</button>
+            <div id="registerOutput" class="output"></div>
+        </div>
+
+        <!-- View Events -->
+        <div id="view" class="section">
+            <h2>All Events</h2>
+            <button onclick="viewEvents()">Refresh</button>
+            <div id="viewOutput" class="output"></div>
+        </div>
+
+        <!-- Search Event -->
+        <div id="search" class="section">
+            <h2>Search Event</h2>
+            <label>Event ID:</label>
+            <input type="text" id="searchEventId" placeholder="Must end with 26">
+            <button onclick="searchEvent()">Search</button>
+            <div id="searchOutput" class="output"></div>
+        </div>
+
+        <!-- Update Event -->
+        <div id="update" class="section">
+            <h2>Update Event</h2>
+            <label>Event ID:</label>
+            <input type="text" id="updateEventId" placeholder="Must end with 26">
+            <button onclick="loadEventForUpdate()">Load Event</button>
+            <div id="updateForm" style="display:none;">
+                <label>New Name:</label>
+                <input type="text" id="updateName">
+                <label>New Date (dd/mm/yyyy):</label>
+                <input type="text" id="updateDate">
+                <label>New Venue:</label>
+                <input type="text" id="updateVenue">
+                <button onclick="updateEvent()">Update Event</button>
+            </div>
+            <div id="updateOutput" class="output"></div>
+        </div>
+
+        <!-- Delete Event -->
+        <div id="delete" class="section">
+            <h2>Delete Event</h2>
+            <label>Event ID:</label>
+            <input type="text" id="deleteEventId" placeholder="Must end with 26">
+            <button onclick="deleteEvent()" class="danger">Delete Event</button>
+            <div id="deleteOutput" class="output"></div>
+        </div>
+
+        <!-- Edit Participants - NEW -->
+        <div id="editParticipant" class="section">
+            <h2>Edit Participants</h2>
+            <label>Event ID:</label>
+            <input type="text" id="editPartEventId" placeholder="Must end with 26">
+            <button onclick="loadParticipantsForEdit()">Load Participants</button>
+            <div id="participantEditList"></div>
+            <div id="editPartOutput" class="output"></div>
+        </div>
+
+        <!-- Attendance Report -->
+        <div id="report" class="section">
+            <h2>Attendance Report</h2>
+            <button onclick="generateReport()">Generate Report</button>
+            <div id="reportOutput" class="output"></div>
+        </div>
+
+        <!-- Save Records -->
+        <div id="save" class="section">
+            <h2>Save Records</h2>
+            <button onclick="saveRecords()">Download events.txt</button>
+            <div id="saveOutput" class="output"></div>
+        </div>
+    </div>
+
+    <script>
+        let events = [];
+
+        function validDate(date) {
+            if (date.length!== 10) return false;
+            if (date[2]!== '/' || date[5]!== '/') return false;
+            for (let i = 0; i < 10; i++) {
+                if (i === 2 || i === 5) continue;
+                if (date[i] < '0' || date[i] > '9') return false;
+            }
+            const day = parseInt(date.substr(0, 2));
+            const month = parseInt(date.substr(3, 2));
+            if (day < 1 || day > 31) return false;
+            if (month < 1 || month > 12) return false;
+            return true;
+        }
+
+        function validEventID(id) {
+            if (id.length!== 10) return false;
+            if (id.substr(0, 3)!== "UEB") return false;
+            if (id.substr(8, 2)!== "26") return false;
+            for (let i = 3; i < 8; i++) {
+                if (id[i] < '0' || id[i] > '9') return false;
+            }
+            return true;
+        }
+
+        function validParticipantID(id) {
+            if (id.length!== 10) return false;
+            if (id.substr(0, 3)!== "UEB") return false;
+            if (id.substr(8, 2)!== "25") return false;
+            for (let i = 3; i < 8; i++) {
+                if (id[i] < '0' || id[i] > '9') return false;
+            }
+            return true;
+        }
+
+        function eventIDExists(eventID) {
+            return events.some(e => e.id === eventID);
+        }
+
+        function participantIDExists(participantID) {
+            return events.some(e => e.participants.some(p => p.id === participantID));
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            if (sectionId === 'register') showAvailableEvents();
+            if (sectionId === 'view') viewEvents();
+            if (sectionId === 'report') generateReport();
+        }
+
+        function showAvailableEvents() {
+            let html = '<h3>Available Event IDs:</h3>';
+            if (events.length === 0) {
+                html += '<p class="error">No events created yet.</p>';
+            } else {
+                events.forEach((e, i) => {
+                    html += `<p>${i+1}. ${e.id} - ${e.name}</p>`;
+                });
+            }
+            document.getElementById('availableEvents').innerHTML = html;
+        }
+
+        function createEvent() {
+            const id = document.getElementById('eventId').value.trim();
+            const name = document.getElementById('eventName').value.trim();
+            const date = document.getElementById('eventDate').value.trim();
+            const venue = document.getElementById('eventVenue').value.trim();
+            const output = document.getElementById('createOutput');
+
+            if (!validEventID(id)) {
+                output.innerHTML = '<span class="error">Invalid Event ID format.\nID must be 10 characters: UEB + 5 digits + 26\nExample: UEB1234526</span>';
+                return;
+            }
+            if (eventIDExists(id)) {
+                output.innerHTML = '<span class="error">Event ID already exists. Use a unique ID.</span>';
+                return;
+            }
+            if (!validDate(date)) {
+                output.innerHTML = '<span class="error">Invalid date format.\nPlease enter the date like 19/06/2026.</span>';
+                return;
+            }
+            if (!name ||!venue) {
+                output.innerHTML = '<span class="error">Name and Venue cannot be empty.</span>';
+                return;
+            }
+
+            events.push({ id, name, date, venue, participants: [] });
+            output.innerHTML = '<span class="success-msg">Event Created Successfully.</span>';
+            document.getElementById('eventId').value = '';
+            document.getElementById('eventName').value = '';
+            document.getElementById('eventDate').value = '';
+            document.getElementById('eventVenue').value = '';
+        }
+
+        function registerParticipant() {
+            const eventId = document.getElementById('regEventId').value.trim();
+            const partId = document.getElementById('participantId').value.trim();
+            const partName = document.getElementById('participantName').value.trim();
+            const output = document.getElementById('registerOutput');
+
+            const event = events.find(e => e.id === eventId);
+            if (!event) {
+                output.innerHTML = '<span class="error">Event not found.\nNote: Event IDs must end with 26. You entered: ' + eventId + '</span>';
+                return;
+            }
+            if (!validParticipantID(partId)) {
+                output.innerHTML = '<span class="error">Invalid Participant ID format.\nID must be 10 characters: UEB + 5 digits + 25\nExample: UEB1234525</span>';
+                return;
+            }
+            if (participantIDExists(partId)) {
+                output.innerHTML = '<span class="error">Participant ID already exists.\nPlease use a unique Participant ID.</span>';
+                return;
+            }
+            if (!partName) {
+                output.innerHTML = '<span class="error">Participant name cannot be empty.</span>';
+                return;
+            }
+
+            event.participants.push({ id: partId, name: partName });
+            output.innerHTML = '<span class="success-msg">Participant Registered Successfully.</span>';
+            document.getElementById('participantId').value = '';
+            document.getElementById('participantName').value = '';
+        }
+
+        function viewEvents() {
+            const output = document.getElementById('viewOutput');
+            if (events.length === 0) {
+                output.innerHTML = 'No events to display.';
+                return;
+            }
+            let html = '';
+            events.forEach(e => {
+                html += `<div class="event-card">`;
+                html += `ID: ${e.id}\nName: ${e.name}\nDate: ${e.date}\nVenue: ${e.venue}\nParticipants: ${e.participants.length}\n`;
+                html += `\nParticipant List:\n`;
+                if (e.participants.length === 0) {
+                    html += 'No participants registered yet.\n';
+                } else {
+                    e.participants.forEach(p => {
+                        html += ` Participant ID: ${p.id}\n Participant Name: ${p.name}\n`;
+                    });
+                }
+                html += `</div>`;
+            });
+            output.innerHTML = html;
+        }
+
+        function searchEvent() {
+            const id = document.getElementById('searchEventId').value.trim();
+            const output = document.getElementById('searchOutput');
+            const event = events.find(e => e.id === id);
+            if (!event) {
+                output.innerHTML = '<span class="error">Event not found.</span>';
+                return;
+            }
+            let html = 'Event Found\n\n';
+            html += `Name: ${event.name}\nDate: ${event.date}\nVenue: ${event.venue}\nParticipants: ${event.participants.length}\n\nParticipant List:\n`;
+            event.participants.forEach(p => {
+                html += `ID: ${p.id}\nName: ${p.name}\n`;
+            });
+            output.innerHTML = html;
+        }
+
+        function loadEventForUpdate() {
+            const id = document.getElementById('updateEventId').value.trim();
+            const output = document.getElementById('updateOutput');
+            const event = events.find(e => e.id === id);
+            if (!event) {
+                output.innerHTML = '<span class="error">Event not found.</span>';
+                document.getElementById('updateForm').style.display = 'none';
+                return;
+            }
+            document.getElementById('updateName').value = event.name;
+            document.getElementById('updateDate').value = event.date;
+            document.getElementById('updateVenue').value = event.venue;
+            document.getElementById('updateForm').style.display = 'block';
+            output.innerHTML = '';
+        }
+
+        function updateEvent() {
+            const id = document.getElementById('updateEventId').value.trim();
+            const name = document.getElementById('updateName').value.trim();
+            const date = document.getElementById('updateDate').value.trim();
+            const venue = document.getElementById('updateVenue').value.trim();
+            const output = document.getElementById('updateOutput');
+            const event = events.find(e => e.id === id);
+            if (!validDate(date)) {
+                output.innerHTML = '<span class="error">Invalid date format.\nPlease enter the date like 19/06/2026.</span>';
+                return;
+            }
+            event.name = name;
+            event.date = date;
+            event.venue = venue;
+            output.innerHTML = '<span class="success-msg">Updated Successfully.</span>';
+            document.getElementById('updateForm').style.display = 'none';
+        }
+
+        function deleteEvent() {
+            const id = document.getElementById('deleteEventId').value.trim();
+            const output = document.getElementById('deleteOutput');
+            const index = events.findIndex(e => e.id === id);
+            if (index === -1) {
+                output.innerHTML = '<span class="error">Event not found.</span>';
+                return;
+            }
+            events.splice(index, 1);
+            output.innerHTML = '<span class="success-msg">Deleted Successfully.</span>';
+            document.getElementById('deleteEventId').value = '';
+        }
+
+        // NEW: Edit Participants
+        function loadParticipantsForEdit() {
+            const eventId = document.getElementById('editPartEventId').value.trim();
+            const output = document.getElementById('editPartOutput');
+            const listDiv = document.getElementById('participantEditList');
+            const event = events.find(e => e.id === eventId);
+            
+            if (!event) {
+                output.innerHTML = '<span class="error">Event not found.</span>';
+                listDiv.innerHTML = '';
+                return;
+            }
+            if (event.participants.length === 0) {
+                output.innerHTML = '<span class="error">No participants in this event.</span>';
+                listDiv.innerHTML = '';
+                return;
+            }
+
+            let html = '<h3>Participants in ' + event.name + ':</h3>';
+            event.participants.forEach((p, idx) => {
+                html += `<div class="participant-item">
+                    <span><strong>${p.id}</strong> - ${p.name}</span>
+                    <div>
+                        <button class="warning" onclick="editParticipantName('${eventId}', ${idx})">Edit Name</button>
+                        <button class="danger" onclick="deleteParticipant('${eventId}', ${idx})">Delete</button>
+                    </div>
+                </div>`;
+            });
+            listDiv.innerHTML = html;
+            output.innerHTML = '';
+        }
+
+        function editParticipantName(eventId, partIdx) {
+            const event = events.find(e => e.id === eventId);
+            const participant = event.participants[partIdx];
+            const newName = prompt(`Edit name for ${participant.id}:`, participant.name);
+            if (newName && newName.trim()!== '') {
+                participant.name = newName.trim();
+                document.getElementById('editPartOutput').innerHTML = '<span class="success-msg">Participant name updated.</span>';
+                loadParticipantsForEdit();
+            }
+        }
+
+        function deleteParticipant(eventId, partIdx) {
+            if (!confirm('Delete this participant?')) return;
+            const event = events.find(e => e.id === eventId);
+            event.participants.splice(partIdx, 1);
+            document.getElementById('editPartOutput').innerHTML = '<span class="success-msg">Participant deleted.</span>';
+            loadParticipantsForEdit();
+        }
+
+        function generateReport() {
+            const output = document.getElementById('reportOutput');
+            if (events.length === 0) {
+                output.innerHTML = 'No events to report.';
+                return;
+            }
+            let html = 'Attendance Report\n\n';
+            events.forEach(e => {
+                html += `Event: ${e.name}\nDate: ${e.date}\nVenue: ${e.venue}\nTotal Participants: ${e.participants.length}\n`;
+                e.participants.forEach(p => {
+                    html += ` Participant ID: ${p.id}\n Participant Name: ${p.name}\n`;
+                });
+                html += '------------------------------\n';
+            });
+            output.innerHTML = html;
+        }
+
+        function saveRecords() {
+            let content = '';
+            events.forEach(e => {
+                content += `Event ID: ${e.id}\nEvent Name: ${e.name}\nEvent Date: ${e.date}\nVenue: ${e.venue}\nParticipants: ${e.participants.length}\n`;
+                e.participants.forEach(p => {
+                    content += `Participant ID: ${p.id}\nParticipant Name: ${p.name}\n`;
+                });
+                content += '------------------------------\n';
+            });
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'events.txt';
+            a.click();
+            document.getElementById('saveOutput').innerHTML = '<span class="success-msg">Records Saved Successfully.</span>';
+        }
+
+        // NEW: Export to CSV
+        function exportCSV() {
+            if (events.length === 0) {
+                alert('No events to export.');
+                return;
+            }
+            let csv = 'Event ID,Event Name,Date,Venue,Participant ID,Participant Name\n';
+            events.forEach(e => {
+                if (e.participants.length === 0) {
+                    csv += `${e.id},${e.name},${e.date},${e.venue},,\n`;
+                } else {
+                    e.participants.forEach(p => {
+                        csv += `${e.id},${e.name},${e.date},${e.venue},${p.id},${p.name}\n`;
+                    });
+                }
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'events.csv';
+            a.click();
+            alert('CSV exported successfully. Open with Excel.');
+        }
+
+        function loadFromStorage() {
+            const stored = localStorage.getItem('events');
+            if (stored) {
+                events = JSON.parse(stored);
+                alert('Records loaded from browser storage.');
+            } else {
+                alert('No saved records found.');
+            }
+        }
+
+        setInterval(() => {
+            localStorage.setItem('events', JSON.stringify(events));
+        }, 2000);
+    </script>
+</body>
+</html>

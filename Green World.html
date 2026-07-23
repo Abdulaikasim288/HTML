@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GREEN WORD COMPANY LIMITED</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f4f9f4, #e8f5e8);
+            padding: 20px;
+        }
+     .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0,100,0,0.15);
+            overflow: hidden;
+            border: 3px solid #2d5016;
+        }
+     .header {
+            background: linear-gradient(135deg, #2d5016, #4a7c23);
+            color: #fff;
+            padding: 35px;
+            text-align: center;
+            position: relative;
+        }
+     .header::before {
+            content: "🌴";
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 50px;
+            opacity: 0.3;
+        }
+     .header::after {
+            content: "🛢️";
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 50px;
+            opacity: 0.3;
+        }
+     .header h1 {
+            font-size: 32px;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+     .header.motto {
+            font-size: 18px;
+            font-style: italic;
+            color: #ffd700;
+            letter-spacing: 2px;
+        }
+     .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f8fff8;
+            border-bottom: 2px solid #4a7c23;
+        }
+     .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4a7c23;
+            text-align: center;
+        }
+     .stat-card h4 {
+            color: #2d5016;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+     .stat-card.value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4a7c23;
+        }
+     .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            padding: 20px;
+            background: #f0f8f0;
+        }
+        button {
+            padding: 12px;
+            background: #4a7c23;
+            color: white;
+            border: 2px solid #2d5016;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #2d5016;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        button.danger { background: #c0392b; border-color: #a93226; }
+        button.danger:hover { background: #a93226; }
+        button.success { background: #27ae60; border-color: #229954; }
+        button.success:hover { background: #229954; }
+        button.warning { background: #f39c12; border-color: #e67e22; }
+        button.warning:hover { background: #e67e22; }
+     .section {
+            display: none;
+            padding: 30px;
+        }
+     .section.active { display: block; }
+     .section h3 {
+            color: #2d5016;
+            border-bottom: 3px solid #ffd700;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2d5016;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #4a7c23;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 5px rgba(255,215,0,0.5);
+        }
+        textarea { resize: vertical; min-height: 80px; }
+     .form-group { margin-bottom: 15px; }
+     .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+     .output {
+            background: #f8fff8;
+            border: 2px solid #4a7c23;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+     .error { color: #c0392b; font-weight: bold; }
+     .success-msg { color: #27ae60; font-weight: bold; }
+     .data-card {
+            background: white;
+            border: 2px solid #4a7c23;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 8px;
+            border-left: 5px solid #ffd700;
+        }
+     .data-card h4 {
+            color: #2d5016;
+            margin-bottom: 8px;
+        }
+     .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+     .badge-active { background: #d4edda; color: #155724; }
+     .badge-pending { background: #fff3cd; color: #856404; }
+     .badge-completed { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>GREEN WORD COMPANY LIMITED</h1>
+            <div class="motto">"The Unlimited Oil"</div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <h4>TOTAL EMPLOYEES</h4>
+                <div class="value" id="statEmployees">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>TOTAL PRODUCTS</h4>
+                <div class="value" id="statProducts">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>TOTAL ORDERS</h4>
+                <div class="value" id="statOrders">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>TOTAL SALES</h4>
+                <div class="value" id="statSales">GH₵ 0</div>
+            </div>
+        </div>
+
+        <div class="menu">
+            <button onclick="showSection('employee')">1. Manage Employees</button>
+            <button onclick="showSection('product')">2. Manage Products</button>
+            <button onclick="showSection('order')">3. Create Order</button>
+            <button onclick="showSection('viewOrders')">4. View Orders</button>
+            <button onclick="showSection('inventory')">5. Inventory</button>
+            <button onclick="showSection('customer')">6. Customers</button>
+            <button onclick="showSection('report')">7. Sales Report</button>
+            <button onclick="showSection('save')" class="success">8. Save Records</button>
+            <button onclick="exportCSV()" class="success">9. Export CSV</button>
+            <button onclick="loadFromStorage()">10. Load Records</button>
+        </div>
+
+        <!-- 1. Manage Employees -->
+        <div id="employee" class="section active">
+            <h3>Employee Management</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Employee ID:</label>
+                    <input type="text" id="empId" placeholder="GWC-EMP-001">
+                </div>
+                <div class="form-group">
+                    <label>Full Name:</label>
+                    <input type="text" id="empName">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Position:</label>
+                    <select id="empPosition">
+                        <option value="">Select Position</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Sales Rep">Sales Rep</option>
+                        <option value="Production Staff">Production Staff</option>
+                        <option value="Driver">Driver</option>
+                        <option value="Accountant">Accountant</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Department:</label>
+                    <select id="empDepartment">
+                        <option value="Production">Production</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Logistics">Logistics</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Phone:</label>
+                    <input type="text" id="empPhone">
+                </div>
+                <div class="form-group">
+                    <label>Salary: GH₵</label>
+                    <input type="number" id="empSalary" step="0.01">
+                </div>
+            </div>
+            <button onclick="addEmployee()">Add Employee</button>
+            <button onclick="viewEmployees()" class="warning">View All Employees</button>
+            <div id="employeeOutput" class="output"></div>
+        </div>
+
+        <!-- 2. Manage Products -->
+        <div id="product" class="section">
+            <h3>Product Management - Oil Products</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Product ID:</label>
+                    <input type="text" id="prodId" placeholder="GWC-PRD-001">
+                </div>
+                <div class="form-group">
+                    <label>Product Name:</label>
+                    <input type="text" id="prodName" placeholder="e.g. Palm Oil 5L">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Category:</label>
+                    <select id="prodCategory">
+                        <option value="Palm Oil">Palm Oil</option>
+                        <option value="Coconut Oil">Coconut Oil</option>
+                        <option value="Shea Butter">Shea Butter</option>
+                        <option value="Groundnut Oil">Groundnut Oil</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Unit Size:</label>
+                    <input type="text" id="prodUnit" placeholder="e.g. 5L, 1 Gallon">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Stock Quantity:</label>
+                    <input type="number" id="prodStock">
+                </div>
+                <div class="form-group">
+                    <label>Price per Unit: GH₵</label>
+                    <input type="number" id="prodPrice" step="0.01">
+                </div>
+            </div>
+            <button onclick="addProduct()">Add Product</button>
+            <button onclick="viewProducts()" class="warning">View All Products</button>
+            <div id="productOutput" class="output"></div>
+        </div>
+
+        <!-- 3. Create Order -->
+        <div id="order" class="section">
+            <h3>Create New Order</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Order ID:</label>
+                    <input type="text" id="orderId" placeholder="GWC-ORD-001">
+                </div>
+                <div class="form-group">
+                    <label>Customer Name:</label>
+                    <input type="text" id="orderCustomer">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Customer Phone:</label>
+                    <input type="text" id="orderPhone">
+                </div>
+                <div class="form-group">
+                    <label>Order Date:</label>
+                    <input type="text" id="orderDate" placeholder="dd/mm/yyyy">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Select Product:</label>
+                <select id="orderProduct"></select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Quantity:</label>
+                    <input type="number" id="orderQty" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Payment Status:</label>
+                    <select id="orderPayment">
+                        <option value="Paid">Paid</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Partial">Partial</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="createOrder()">Create Order</button>
+            <div id="orderOutput" class="output"></div>
+        </div>
+
+        <!-- 4. View Orders -->
+        <div id="viewOrders" class="section">
+            <h3>All Orders</h3>
+            <button onclick="viewOrders()">Refresh Orders</button>
+            <button onclick="filterOrders('Paid')" class="success">Show Paid</button>
+            <button onclick="filterOrders('Pending')" class="warning">Show Pending</button>
+            <div id="viewOrdersOutput" class="output"></div>
+        </div>
+
+        <!-- 5. Inventory -->
+        <div id="inventory" class="section">
+            <h3>Inventory Management</h3>
+            <button onclick="viewInventory()">Check Stock Levels</button>
+            <div id="inventoryOutput" class="output"></div>
+        </div>
+
+        <!-- 6. Customers -->
+        <div id="customer" class="section">
+            <h3>Customer Database</h3>
+            <button onclick="viewCustomers()">View All Customers</button>
+            <div id="customerOutput" class="output"></div>
+        </div>
+
+        <!-- 7. Sales Report -->
+        <div id="report" class="section">
+            <h3>Sales Report</h3>
+            <button onclick="generateReport()">Generate Report</button>
+            <div id="reportOutput" class="output"></div>
+        </div>
+
+        <!-- 8. Save Records -->
+        <div id="save" class="section">
+            <h3>Save Records</h3>
+            <button onclick="saveRecords()">Download GreenWordRecords.txt</button>
+            <div id="saveOutput" class="output"></div>
+        </div>
+    </div>
+
+    <script>
+        let employees = [];
+        let products = [];
+        let orders = [];
+        let customers = [];
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            updateStats();
+            if (sectionId === 'order') loadProductDropdown();
+            if (sectionId === 'viewOrders') viewOrders();
+            if (sectionId === 'inventory') viewInventory();
+            if (sectionId === 'customer') viewCustomers();
+            if (sectionId === 'report') generateReport();
+        }
+
+        function updateStats() {
+            document.getElementById('statEmployees').textContent = employees.length;
+            document.getElementById('statProducts').textContent = products.length;
+            document.getElementById('statOrders').textContent = orders.length;
+            const totalSales = orders.filter(o => o.payment === 'Paid')
+                                   .reduce((sum, o) => sum + o.total, 0);
+            document.getElementById('statSales').textContent = `GH₵ ${totalSales.toFixed(2)}`;
+        }
+
+        function addEmployee() {
+            const id = document.getElementById('empId').value.trim();
+            const name = document.getElementById('empName').value.trim();
+            const position = document.getElementById('empPosition').value;
+            const department = document.getElementById('empDepartment').value;
+            const phone = document.getElementById('empPhone').value.trim();
+            const salary = parseFloat(document.getElementById('empSalary').value);
+            const output = document.getElementById('employeeOutput');
+
+            if (!id ||!name ||!position) {
+                output.innerHTML = '<span class="error">Please fill required fields.</span>';
+                return;
+            }
+            if (employees.some(e => e.id === id)) {
+                output.innerHTML = '<span class="error">Employee ID already exists.</span>';
+                return;
+            }
+
+            employees.push({ id, name, position, department, phone, salary });
+            output.innerHTML = '<span class="success-msg">Employee Added Successfully.</span>';
+            document.querySelectorAll('#employee input, #employee select').forEach(el => el.value = '');
+            updateStats();
+        }
+
+        function viewEmployees() {
+            const output = document.getElementById('employeeOutput');
+            if (employees.length === 0) {
+                output.innerHTML = 'No employees registered.';
+                return;
+            }
+            let html = '';
+            employees.forEach(e => {
+                html += `<div class="data-card">`;
+                html += `<h4>${e.name} <span class="badge badge-active">${e.id}</span></h4>`;
+                html += `Position: ${e.position} | Department: ${e.department}\n`;
+                html += `Phone: ${e.phone} | Salary: GH₵ ${e.salary.toFixed(2)}\n`;
+                html += `</div>`;
+            });
+            output.innerHTML = html;
+        }
+
+        function addProduct() {
+            const id = document.getElementById('prodId').value.trim();
+            const name = document.getElementById('prodName').value.trim();
+            const category = document.getElementById('prodCategory').value;
+            const unit = document.getElementById('prodUnit').value.trim();
+            const stock = parseInt(document.getElementById('prodStock').value);
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const output = document.getElementById('productOutput');
+
+            if (!id ||!name ||!stock ||!price) {
+                output.innerHTML = '<span class="error">Please fill all fields.</span>';
+                return;
+            }
+            if (products.some(p => p.id === id)) {
+                output.innerHTML = '<span class="error">Product ID already exists.</span>';
+                return;
+            }
+
+            products.push({ id, name, category, unit, stock, price });
+            output.innerHTML = '<span class="success-msg">Product Added Successfully.</span>';
+            document.querySelectorAll('#product input, #product select').forEach(el => el.value = '');
+            updateStats();
+        }
+
+        function viewProducts() {
+            const output = document.getElementById('productOutput');
+            if (products.length === 0) {
+                output.innerHTML = 'No products in inventory.';
+                return;
+            }
+            let html = '';
+            products.forEach(p => {
+                const stockStatus = p.stock < 10? 'LOW STOCK' : 'In Stock';
+                html += `<div class="data-card">`;
+                html += `<h4>${p.name} <span class="badge badge-active">${p.id}</span></h4>`;
+                html += `Category: ${p.category} | Unit: ${p.unit}\n`;
+                html += `Stock: ${p.stock} units | Price: GH₵ ${p.price.toFixed(2)}\n`;
+                html += `Status: ${stockStatus}\n`;
+                html += `</div>`;
+            });
+            output.innerHTML = html;
+        }
+
+        function loadProductDropdown() {
+            const select = document.getElementById('orderProduct');
+            select.innerHTML = '<option value="">Select Product</option>';
+            products.forEach(p => {
+                if (p.stock > 0) {
+                    select.innerHTML += `<option value="${p.id}">${p.name} - ${p.unit} - GH₵${p.price.toFixed(2)} (Stock: ${p.stock})</option>`;
+                }
+            });
+        }
+
+        function createOrder() {
+            const id = document.getElementById('orderId').value.trim();
+            const customer = document.getElementById('orderCustomer').value.trim();
+            const phone = document.getElementById('orderPhone').value.trim();
+            const date = document.getElementById('orderDate').value.trim();
+            const prodId = document.getElementById('orderProduct').value;
+            const qty = parseInt(document.getElementById('orderQty').value);
+            const payment = document.getElementById('orderPayment').value;
+            const output = document.getElementById('orderOutput');
+
+            if (!id ||!customer ||!prodId ||!qty) {
+                output.innerHTML = '<span class="error">Please fill all fields.</span>';
+                return;
+            }
+            if (orders.some(o => o.id === id)) {
+                output.innerHTML = '<span class="error">Order ID already exists.</span>';
+                return;
+            }
+
+            const product = products.find(p => p.id === prodId);
+            if (product.stock < qty) {
+                output.innerHTML = '<span class="error">Insufficient stock. Available: ' + product.stock + '</span>';
+                return;
+            }
+
+            const total = product.price * qty;
+            orders.push({
+                id, customer, phone, date, productId: prodId,
+                productName: product.name, qty, unitPrice: product.price,
+                total, payment
+            });
+
+            product.stock -= qty;
+
+            if (!customers.some(c => c.phone === phone)) {
+                customers.push({ name: customer, phone });
+            }
+
+            output.innerHTML = `<span class="success-msg">Order Created Successfully.\nTotal: GH₵ ${total.toFixed(2)}</span>`;
+            document.querySelectorAll('#order input, #order select').forEach(el => el.value = '');
+            updateStats();
+        }
+
+        function viewOrders(filter = null) {
+            const output = document.getElementById('viewOrdersOutput');
+            let filteredOrders = filter? orders.filter(o => o.payment === filter) : orders;
+
+            if (filteredOrders.length === 0) {
+                output.innerHTML = 'No orders found.';
+                return;
+            }
+            let html = '';
+            filteredOrders.forEach(o => {
+                const badgeClass = o.payment === 'Paid'? 'badge-active' :
+                                  o.payment === 'Pending'? 'badge-pending' : 'badge-completed';
+                html += `<div class="data-card">`;
+                html += `<h4>Order ${o.id} <span class="badge ${badgeClass}">${o.payment}</span></h4>`;
+                html += `Customer: ${o.customer} | Phone: ${o.phone}\n`;
+                html += `Date: ${o.date}\n`;
+                html += `Product: ${o.productName} | Qty: ${o.qty} | Unit Price: GH₵ ${o.unitPrice.toFixed(2)}\n`;
+                html += `Total: GH₵ ${o.total.toFixed(2)}\n`;
+                html += `</div>`;
+            });
+            output.innerHTML = html;
+        }
+
+        function filterOrders(status) {
+            viewOrders(status);
+        }
+
+        function viewInventory() {
+            const output = document.getElementById('inventoryOutput');
+            if (products.length === 0) {
+                output.innerHTML = 'No products in inventory.';
+                return;
+            }
+            let html = '========== INVENTORY STATUS ==========\n\n';
+            products.forEach(p => {
+                const status = p.stock === 0? 'OUT OF STOCK' : p.stock < 10? 'LOW STOCK' : 'In Stock';
+                html += `${p.id} - ${p.name}\n`;
+                html += `Category: ${p.category} | Unit: ${p.unit}\n`;
+                html += `Stock: ${p.stock} | Price: GH₵ ${p.price.toFixed(2)} | ${status}\n`;
+                html += '----------------------------------\n';
+            });
+            output.innerHTML = html;
+        }
+
+        function viewCustomers() {
+            const output = document.getElementById('customerOutput');
+            if (customers.length === 0) {
+                output.innerHTML = 'No customers registered.';
+                return;
+            }
+            let html = '';
+            customers.forEach((c, i) => {
+                const customerOrders = orders.filter(o => o.phone === c.phone);
+                const totalSpent = customerOrders.filter(o => o.payment === 'Paid')
+                                               .reduce((sum, o) => sum + o.total, 0);
+                html += `<div class="data-card">`;
+                html += `<h4>${c.name}</h4>`;
+                html += `Phone: ${c.phone}\n`;
+                html += `Total Orders: ${customerOrders.length}\n`;
+                html += `Total Spent: GH₵ ${totalSpent.toFixed(2)}\n`;
+                html += `</div>`;
+            });
+            output.innerHTML = html;
+        }
+
+        function generateReport() {
+            const output = document.getElementById('reportOutput');
+            const totalSales = orders.filter(o => o.payment === 'Paid')
+                                   .reduce((sum, o) => sum + o.total, 0);
+            const pendingSales = orders.filter(o => o.payment === 'Pending')
+                                     .reduce((sum, o) => sum + o.total, 0);
+
+            let html = '========== SALES REPORT ==========\n\n';
+            html += `Company: GREEN WORD COMPANY LIMITED\n`;
+            html += `Motto: "The Unlimited Oil"\n\n`;
+            html += `Total Employees: ${employees.length}\n`;
+            html += `Total Products: ${products.length}\n`;
+            html += `Total Orders: ${orders.length}\n`;
+            html += `Total Customers: ${customers.length}\n\n`;
+            html += `Total Sales (Paid): GH₵ ${totalSales.toFixed(2)}\n`;
+            html += `Pending Sales: GH₵ ${pendingSales.toFixed(2)}\n\n`;
+            html += '--- Top Products by Sales ---\n';
+
+            const productSales = {};
+            orders.filter(o => o.payment === 'Paid').forEach(o => {
+                productSales[o.productName] = (productSales[o.productName] || 0) + o.qty;
+            });
+            Object.entries(productSales)
+                 .sort((a,b) => b[1] - a[1])
+                 .slice(0,5)
+                 .forEach(([name, qty]) => {
+                      html += `${name}: ${qty} units sold\n`;
+                  });
+
+            output.innerHTML = html;
+        }
+
+        function saveRecords() {
+            let content = 'GREEN WORD COMPANY LIMITED\n';
+            content += '"The Unlimited Oil"\n';
+            content += '==================================\n\n';
+
+            content += '--- EMPLOYEES ---\n';
+            employees.forEach(e => {
+                content += `ID: ${e.id} | Name: ${e.name} | ${e.position} | ${e.department} | GH₵${e.salary}\n`;
+            });
+
+            content += '\n--- PRODUCTS ---\n';
+            products.forEach(p => {
+                content += `ID: ${p.id} | ${p.name} | ${p.category} | Stock: ${p.stock} | GH₵${p.price}\n`;
+            });
+
+            content += '\n--- ORDERS ---\n';
+            orders.forEach(o => {
+                content += `Order ${o.id}: ${o.customer} | ${o.productName} x${o.qty} | GH₵${o.total} | ${o.payment}\n`;
+            });
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'GreenWordRecords.txt';
+            a.click();
+            document.getElementById('saveOutput').innerHTML = '<span class="success-msg">Records Saved Successfully.</span>';
+        }
+
+        function exportCSV() {
+            if (orders.length === 0) {
+                alert('No orders to export.');
+                return;
+            }
+            let csv = 'Order ID,Customer,Phone,Date,Product,Quantity,Unit Price,Total,Payment Status\n';
+            orders.forEach(o => {
+                csv += `${o.id},"${o.customer}",${o.phone},${o.date},"${o.productName}",${o.qty},${o.unitPrice.toFixed(2)},${o.total.toFixed(2)},${o.payment}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'GreenWordOrders.csv';
+            a.click();
+        }
+
+        setInterval(() => {
+            localStorage.setItem('greenword_employees', JSON.stringify(employees));
+            localStorage.setItem('greenword_products', JSON.stringify(products));
+            localStorage.setItem('greenword_orders', JSON.stringify(orders));
+            localStorage.setItem('greenword_customers', JSON.stringify(customers));
+        }, 2000);
+
+        window.onload = () => {
+            const storedEmp = localStorage.getItem('greenword_employees');
+            const storedProd = localStorage.getItem('greenword_products');
+            const storedOrd = localStorage.getItem('greenword_orders');
+            const storedCust = localStorage.getItem('greenword_customers');
+            if (storedEmp) employees = JSON.parse(storedEmp);
+            if (storedProd) products = JSON.parse(storedProd);
+            if (storedOrd) orders = JSON.parse(storedOrd);
+            if (storedCust) customers = JSON.parse(storedCust);
+            updateStats();
+        };
+    </script>
+</body>
+</html>
